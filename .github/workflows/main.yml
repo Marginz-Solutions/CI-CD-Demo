@@ -1,29 +1,35 @@
-name: CI/CD Pipeline
-permissions:
-  contents: read
+name: Run Tests (Vite + TypeScript)
+
 on:
   push:
-    branches: [main, develop]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout code
-      - uses: actions/checkout@v3
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # Step 2: Setup Node
-      - uses: actions/setup-node@v3
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
+          cache: 'npm'
 
-      # Step 3: Install dependencies
-      - run: npm ci
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
 
-      # Step 4: Run tests with Vitest in CI mode
-      - run: npx vitest run --reporter verbose
+      # 4️⃣ Build project (optional but recommended)
+      - name: Build Vite project
+        run: npm run build
 
-      # Step 5: Build the app
-      - run: npm run build
+      # 5️⃣ Run tests with Vitest
+      - name: Run tests
+        run: npm run test -- --coverage
